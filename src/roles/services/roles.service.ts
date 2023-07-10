@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolEntity } from '../entities/rol.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateRolDTO } from '../dtos/create-rol.dto';
-import { updateRolDTO } from '../dtos/update-rol.dto';
+import { UpdateRolDTO } from '../dtos/update-rol.dto';
 import { validate as isValidUUID } from 'uuid';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class RolesService {
     return rol;
   }
 
-  async updateRol(id: string, newRol: updateRolDTO): Promise<any> {
+  async updateRol(id: string, updatedRol: UpdateRolDTO): Promise<UpdateResult> {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid rol id');
     }
@@ -45,10 +45,10 @@ export class RolesService {
     const rol = await this.rolRepository.findOneBy({ id });
     if (!rol) throw new BadRequestException('Rol not found');
 
-    return await this.rolRepository.update(id, newRol);
+    return await this.rolRepository.update(id, updatedRol);
   }
 
-  async deleteRol(id: string): Promise<any> {
+  async deleteRol(id: string): Promise<DeleteResult> {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid rol id');
     }

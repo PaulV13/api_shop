@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CreateRolDTO } from '../dtos/create-rol.dto';
 import { RolesService } from '../services/roles.service';
-import { updateRolDTO } from '../dtos/update-rol.dto';
+import { UpdateRolDTO } from '../dtos/update-rol.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -31,7 +31,7 @@ export class RolesController {
   }
 
   @Put(':id')
-  async updateRol(@Param('id') id: string, @Body() updateData: updateRolDTO) {
+  async updateRol(@Param('id') id: string, @Body() updateData: UpdateRolDTO) {
     return await this.rolesService.updateRol(id, updateData);
   }
 
