@@ -15,7 +15,6 @@ export class RolesService {
 
   async create(rolCreated: CreateRolDTO): Promise<RolEntity> {
     const rol = await this.rolRepository.findOneBy({ name: rolCreated.name });
-
     if (rol) throw new BadRequestException('Role already exists');
 
     const newRol = this.rolRepository.create(rolCreated);

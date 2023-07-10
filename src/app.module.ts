@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { PostgresDataSource } from './config/database-config';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CategoriesModule } from './categories/categories.module';
     TypeOrmModule.forRoot(PostgresDataSource),
     RolesModule,
     CategoriesModule,
+    ProductsModule,
   ],
 })
 export class AppModule {}

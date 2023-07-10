@@ -32,20 +32,13 @@ export class CategoriesService {
     const category = await this.repositoryCategory.findOneBy({ id });
     if (!category) throw new BadRequestException('Category not found');
 
-    return await this.repositoryCategory.findOneBy({ id });
+    return category;
   }
 
   async updateCategory(
     id: string,
     updatedCategory: UpdateCategoryDTO,
   ): Promise<UpdateResult> {
-    const categoryExists = await this.repositoryCategory.findOneBy({
-      name: updatedCategory.name,
-    });
-
-    if (categoryExists)
-      throw new BadRequestException('Category already exists');
-
     const category = await this.repositoryCategory.findOneBy({ id });
     if (!category) throw new BadRequestException('Category not found');
 
