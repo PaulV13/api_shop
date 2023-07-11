@@ -5,6 +5,7 @@ import { RolesModule } from './roles/roles.module';
 import { PostgresDataSource } from './config/database-config';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProductsModule } from './products/products.module';
     RolesModule,
     CategoriesModule,
     ProductsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
