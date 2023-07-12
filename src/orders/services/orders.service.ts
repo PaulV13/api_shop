@@ -35,8 +35,6 @@ export class OrdersService {
     await this.ordersRepository.save(newOrder);
 
     order.ordersItem.map(async (orderItem) => {
-      newOrder.total_price += orderItem.price;
-
       const product = await this.productsRepository
         .createQueryBuilder()
         .where({ id: orderItem.product_id })
@@ -45,8 +43,10 @@ export class OrdersService {
       const newOrderItem = new OrderItemEntity();
       newOrderItem.product = product;
       newOrderItem.quantity = orderItem.quantity;
-      newOrderItem.price = orderItem.price;
+      newOrderItem.price = newOrderItem.product.price * orderItem.quantity;
       newOrderItem.order = newOrder;
+
+      newOrder.total_price += newOrderItem.price;
       await this.ordersItemRepository.save(newOrderItem);
     });
 
