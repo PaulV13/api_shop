@@ -1,11 +1,15 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UpdateUserDTO } from '../dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { RolEntity } from 'src/roles/entities/rol.entity';
+import { RolEntity } from '../../roles/entities/rol.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,25 +20,19 @@ export class UsersService {
     private readonly roleRepository: Repository<RolEntity>,
   ) {}
 
-  async create(user: CreateUserDTO): Promise<InsertResult> {
+  async create(user: CreateUserDTO): Promise<UserEntity> {
     const passwordHash = await bcrypt.hash(user.password, 10);
     user.password = passwordHash;
 
     const role = await this.roleRepository.findOneBy({ id: user.roleId });
-    if (!role) throw new BadRequestException(`Role not found`);
+    if (!role) throw new NotFoundException(`Role not found`);
 
-    return await this.userRepository
-      .createQueryBuilder()
-      .insert()
-      .into(UserEntity)
-      .values({
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        password: user.password,
-        role: role,
-      })
-      .execute();
+    const newUser = this.userRepository.create({
+      role: role,
+      ...user,
+    });
+
+    return await this.userRepository.save(newUser);
   }
 
   async getUsers(): Promise<UserEntity[]> {
@@ -51,7 +49,7 @@ export class UsersService {
       .leftJoinAndSelect('user.role', 'role')
       .getOne();
 
-    if (!user) throw new BadRequestException(`User not found`);
+    if (!user) throw new NotFoundException(`User not found`);
 
     return user;
   }
@@ -59,33 +57,29 @@ export class UsersService {
   async updateUser(
     id: string,
     updatedUser: UpdateUserDTO,
-  ): Promise<UpdateResult> {
+  ): Promise<UserEntity> {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where({ id })
       .getOne();
-    if (!user) throw new BadRequestException(`User not found`);
+    if (!user) throw new NotFoundException(`User not found`);
 
-    return await this.userRepository
-      .createQueryBuilder()
-      .update(UserEntity)
-      .set(updatedUser)
-      .where({ id })
-      .execute();
+    const newUser = await this.userRepository.update(id, updatedUser);
+
+    if (newUser.affected === 0)
+      throw new BadRequestException('Error to updated user');
+
+    return await this.userRepository.findOneBy({ id });
   }
 
-  async deleteUser(id: string): Promise<DeleteResult> {
+  async deleteUser(id: string): Promise<UserEntity> {
     const user = await this.userRepository
       .createQueryBuilder()
       .where({ id })
       .getOne();
-    if (!user) throw new BadRequestException(`User not found`);
+    if (!user) throw new NotFoundException(`User not found`);
 
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .delete()
-      .from(UserEntity)
-      .where('id = :id', { id })
-      .execute();
+    const userDeleted = await this.userRepository.remove(user);
+    return userDeleted;
   }
 }

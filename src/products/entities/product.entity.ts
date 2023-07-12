@@ -4,8 +4,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OrderItemEntity } from '../../orders/entities/order-item.entity';
 
 @Entity('products')
 export class ProductEntity {
@@ -33,4 +35,7 @@ export class ProductEntity {
   @ManyToOne(() => CategoryEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
+
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.product)
+  ordersItem: OrderItemEntity[];
 }

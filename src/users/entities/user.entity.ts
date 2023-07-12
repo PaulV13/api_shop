@@ -1,3 +1,4 @@
+import { OrderEntity } from '../../orders/entities/order.entity';
 import { RolEntity } from '../../roles/entities/rol.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -40,4 +42,7 @@ export class UserEntity {
   })
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
   role: RolEntity;
+
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders: OrderEntity[];
 }
