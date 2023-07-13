@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDTO } from '../dtos/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
@@ -9,28 +13,28 @@ import { UpdateCategoryDTO } from '../dtos/update-category.dto';
 export class CategoriesService {
   constructor(
     @InjectRepository(CategoryEntity)
-    private readonly repositoryCategory: Repository<CategoryEntity>,
+    private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
   async create(category: CreateCategoryDTO): Promise<CategoryEntity> {
-    const categoryExists = await this.repositoryCategory.findOneBy({
+    const categoryExists = await this.categoryRepository.findOneBy({
       name: category.name,
     });
 
     if (categoryExists)
       throw new BadRequestException('Category already exists');
 
-    const newCategory = this.repositoryCategory.create(category);
-    return await this.repositoryCategory.save(newCategory);
+    const newCategory = this.categoryRepository.create(category);
+    return await this.categoryRepository.save(newCategory);
   }
 
   async getCategories(): Promise<CategoryEntity[]> {
-    return await this.repositoryCategory.find();
+    return await this.categoryRepository.find();
   }
 
   async getCategory(id: string): Promise<CategoryEntity> {
-    const category = await this.repositoryCategory.findOneBy({ id });
-    if (!category) throw new BadRequestException('Category not found');
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) throw new NotFoundException('Category not found');
 
     return category;
   }
@@ -39,16 +43,23 @@ export class CategoriesService {
     id: string,
     updatedCategory: UpdateCategoryDTO,
   ): Promise<UpdateResult> {
-    const category = await this.repositoryCategory.findOneBy({ id });
-    if (!category) throw new BadRequestException('Category not found');
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) throw new NotFoundException('Category not found');
 
-    return await this.repositoryCategory.update(id, updatedCategory);
+    return await this.categoryRepository.update(id, updatedCategory);
   }
 
   async deleteCategory(id: string): Promise<DeleteResult> {
-    const category = await this.repositoryCategory.findOneBy({ id });
-    if (!category) throw new BadRequestException('Category not found');
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) throw new NotFoundException('Category not found');
 
-    return await this.repositoryCategory.delete(id);
+    return await this.categoryRepository.delete(id);
+  }
+
+  async getCategoryByName(name: string): Promise<CategoryEntity> {
+    return await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.name = :name', { name: name })
+      .getOne();
   }
 }

@@ -16,7 +16,7 @@ import { UuidMiddleware } from 'src/products/middlewares/uuid.middleware';
   providers: [ProductsService],
   controllers: [ProductsController],
 })
-export class ProductsModule implements NestModule {
+export class ProductsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(UuidMiddleware)

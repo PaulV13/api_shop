@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
@@ -25,7 +29,7 @@ export class OrdersService {
       .createQueryBuilder()
       .where({ id: order.user_id })
       .getOne();
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new NotFoundException('User not found');
 
     const newOrder = new OrderEntity();
     newOrder.date = order.date;

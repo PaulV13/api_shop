@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateProductDTO } from '../dtos/create-product.dto';
 import { ProductsService } from '../services/products.service';
@@ -27,12 +28,12 @@ export class ProductsController {
     return await this.productsService.getProducts();
   }
 
-  @Get(':id')
+  @Get('{:id}')
   async getProduct(@Param('id') id: string) {
     return await this.productsService.getProduct(id);
   }
 
-  @Patch(':id')
+  @Patch('{:id}')
   async updateProduct(
     @Param('id') id: string,
     @Body() updatedProduct: UpdateProductDTO,
@@ -40,8 +41,21 @@ export class ProductsController {
     return await this.productsService.updateProduct(id, updatedProduct);
   }
 
-  @Delete(':id')
+  @Delete('{:id}')
   async deleteProduct(@Param('id') id: string) {
     return await this.productsService.deleteProduct(id);
+  }
+
+  @Get('/category')
+  async getProductsByCategory(@Query('category') category: string) {
+    return await this.productsService.getProductsByCategory(category);
+  }
+
+  @Get('/price')
+  async getProductsByPriceRange(
+    @Query('min') min: string,
+    @Query('max') max: string,
+  ) {
+    return await this.productsService.getProductsByPriceRange(min, max);
   }
 }

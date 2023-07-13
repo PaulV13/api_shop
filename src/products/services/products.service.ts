@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDTO } from '../dtos/create-product.dto';
 import { ProductEntity } from '../entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,8 +19,7 @@ export class ProductsService {
     const category = await this.categoryRepository.findOneBy({
       id: product.category_id,
     });
-
-    if (!category) throw new BadRequestException('Category is not exist');
+    if (!category) throw new NotFoundException('Category not found');
 
     const newProduct = this.productRepository.create(product);
     newProduct.category = category;
@@ -30,6 +29,11 @@ export class ProductsService {
 
   async getProducts(): Promise<ProductEntity[]> {
     return await this.productRepository.find({
+      select: {
+        category: {
+          name: true,
+        },
+      },
       relations: {
         category: true,
       },
@@ -38,10 +42,15 @@ export class ProductsService {
 
   async getProduct(id: string): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
+      select: {
+        category: {
+          name: true,
+        },
+      },
       relations: { category: true },
       where: { id: id },
     });
-    if (!product) throw new BadRequestException('Product is not exist');
+    if (!product) throw new NotFoundException('Product not found');
 
     return product;
   }
@@ -51,15 +60,45 @@ export class ProductsService {
     updatedProduct: UpdateProductDTO,
   ): Promise<UpdateResult> {
     const product = await this.productRepository.findOneBy({ id: id });
-    if (!product) throw new BadRequestException('Product is not exist');
+    if (!product) throw new NotFoundException('Product not found');
 
     return await this.productRepository.update(id, updatedProduct);
   }
 
   async deleteProduct(id: string): Promise<DeleteResult> {
     const product = await this.productRepository.findOneBy({ id: id });
-    if (!product) throw new BadRequestException('Product is not exist');
+    if (!product) throw new NotFoundException('Product not found');
 
     return await this.productRepository.delete(id);
+  }
+
+  async getProductsByCategory(categoryName: string): Promise<ProductEntity[]> {
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('LOWER(category.name) = :name', {
+        name: categoryName.toLowerCase(),
+      })
+      .getOne();
+
+    if (!category) throw new NotFoundException('Category not found');
+
+    const products = await this.productRepository.find({
+      where: {
+        category: category,
+      },
+    });
+
+    return products;
+  }
+
+  async getProductsByPriceRange(
+    min: string,
+    max: string,
+  ): Promise<ProductEntity[]> {
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.price >= :min', { min })
+      .andWhere('product.price <= :max', { max })
+      .getMany();
   }
 }

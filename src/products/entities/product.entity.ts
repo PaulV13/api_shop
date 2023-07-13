@@ -29,9 +29,6 @@ export class ProductEntity {
   @Column()
   stock: number;
 
-  @Column()
-  category_id: string;
-
   @ManyToOne(() => CategoryEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;

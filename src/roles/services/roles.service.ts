@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolEntity } from '../entities/rol.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
@@ -31,7 +35,7 @@ export class RolesService {
     }
 
     const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new BadRequestException('Rol not found');
+    if (!rol) throw new NotFoundException('Rol not found');
 
     return rol;
   }
@@ -42,7 +46,7 @@ export class RolesService {
     }
 
     const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new BadRequestException('Rol not found');
+    if (!rol) throw new NotFoundException('Rol not found');
 
     return await this.rolRepository.update(id, updatedRol);
   }
@@ -53,7 +57,7 @@ export class RolesService {
     }
 
     const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new BadRequestException('Rol not found');
+    if (!rol) throw new NotFoundException('Rol not found');
 
     return await this.rolRepository.delete(id);
   }
