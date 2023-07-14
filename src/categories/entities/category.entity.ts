@@ -7,7 +7,4 @@ export class CategoryEntity {
 
   @Column({ unique: true })
   name: string;
-
-  @Column()
-  description: string;
 }
