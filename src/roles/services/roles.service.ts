@@ -4,61 +4,50 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RolEntity } from '../entities/rol.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { RoleEntity } from '../entities/rol.entity';
+import { Repository } from 'typeorm';
 import { CreateRolDTO } from '../dtos/create-rol.dto';
 import { UpdateRolDTO } from '../dtos/update-rol.dto';
-import { validate as isValidUUID } from 'uuid';
 
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectRepository(RolEntity)
-    private readonly rolRepository: Repository<RolEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
   ) {}
 
-  async create(rolCreated: CreateRolDTO): Promise<RolEntity> {
-    const rol = await this.rolRepository.findOneBy({ name: rolCreated.name });
-    if (rol) throw new BadRequestException('Role already exists');
+  async createRol(roleCreated: CreateRolDTO): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOneBy({
+      name: roleCreated.name,
+    });
+    if (role) throw new BadRequestException('Role already exists');
 
-    const newRol = this.rolRepository.create(rolCreated);
-    return await this.rolRepository.save(newRol);
+    const newRole = this.roleRepository.create(roleCreated);
+    return await this.roleRepository.save(newRole);
   }
 
-  async getRoles(): Promise<RolEntity[]> {
-    return await this.rolRepository.find();
+  async getRoles(): Promise<RoleEntity[]> {
+    return await this.roleRepository.find();
   }
 
-  async getRol(id: string): Promise<RolEntity> {
-    if (!isValidUUID(id)) {
-      throw new BadRequestException('Invalid rol id');
-    }
+  async getRole(id: string): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOneBy({ id });
+    if (!role) throw new NotFoundException('Rol not found');
 
-    const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new NotFoundException('Rol not found');
-
-    return rol;
+    return role;
   }
 
-  async updateRol(id: string, updatedRol: UpdateRolDTO): Promise<UpdateResult> {
-    if (!isValidUUID(id)) {
-      throw new BadRequestException('Invalid rol id');
-    }
+  async updateRole(id: string, updatedRole: UpdateRolDTO): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOneBy({ id });
+    if (!role) throw new NotFoundException('Rol not found');
 
-    const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new NotFoundException('Rol not found');
-
-    return await this.rolRepository.update(id, updatedRol);
+    return await this.roleRepository.save({ ...role, ...updatedRole });
   }
 
-  async deleteRol(id: string): Promise<DeleteResult> {
-    if (!isValidUUID(id)) {
-      throw new BadRequestException('Invalid rol id');
-    }
+  async deleteRole(id: string): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOneBy({ id });
+    if (!role) throw new NotFoundException('Rol not found');
 
-    const rol = await this.rolRepository.findOneBy({ id });
-    if (!rol) throw new NotFoundException('Rol not found');
-
-    return await this.rolRepository.delete(id);
+    return await this.roleRepository.remove(role);
   }
 }

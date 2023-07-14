@@ -20,9 +20,9 @@ export class CategoriesModule implements NestModule {
     consumer
       .apply(UuidMiddleware)
       .forRoutes(
-        { path: 'categories/:id', method: RequestMethod.GET },
-        { path: 'categories/:id', method: RequestMethod.DELETE },
-        { path: 'categories/:id', method: RequestMethod.PUT },
+        { path: 'categories/{:id}', method: RequestMethod.GET },
+        { path: 'categories/{:id}', method: RequestMethod.DELETE },
+        { path: 'categories/{:id}', method: RequestMethod.PUT },
       );
   }
 }

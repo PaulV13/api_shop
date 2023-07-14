@@ -9,15 +9,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateUserDTO } from '../dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { RolEntity } from '../../roles/entities/rol.entity';
+import { RoleEntity } from '../../roles/entities/rol.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(RolEntity)
-    private readonly roleRepository: Repository<RolEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
   ) {}
 
   async create(user: CreateUserDTO): Promise<UserEntity> {
@@ -36,18 +36,32 @@ export class UsersService {
   }
 
   async getUsers(): Promise<UserEntity[]> {
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.role', 'role')
-      .getMany();
+    return await this.userRepository.find({
+      select: {
+        role: {
+          name: true,
+        },
+      },
+      relations: {
+        role: true,
+      },
+    });
   }
 
   async getUser(id: string): Promise<UserEntity> {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .where({ id })
-      .leftJoinAndSelect('user.role', 'role')
-      .getOne();
+    const user = await this.userRepository.findOne({
+      select: {
+        role: {
+          name: true,
+        },
+      },
+      where: {
+        id: id,
+      },
+      relations: {
+        role: true,
+      },
+    });
 
     if (!user) throw new NotFoundException(`User not found`);
 
@@ -58,28 +72,16 @@ export class UsersService {
     id: string,
     updatedUser: UpdateUserDTO,
   ): Promise<UserEntity> {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .where({ id })
-      .getOne();
+    const user = this.getUser(id);
     if (!user) throw new NotFoundException(`User not found`);
 
-    const newUser = await this.userRepository.update(id, updatedUser);
-
-    if (newUser.affected === 0)
-      throw new BadRequestException('Error to updated user');
-
-    return await this.userRepository.findOneBy({ id });
+    return await this.userRepository.save({ ...user, ...updatedUser });
   }
 
   async deleteUser(id: string): Promise<UserEntity> {
-    const user = await this.userRepository
-      .createQueryBuilder()
-      .where({ id })
-      .getOne();
+    const user = await this.getUser(id);
     if (!user) throw new NotFoundException(`User not found`);
 
-    const userDeleted = await this.userRepository.remove(user);
-    return userDeleted;
+    return await this.userRepository.remove(user);
   }
 }

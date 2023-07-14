@@ -6,6 +6,8 @@ import {
   Put,
   Delete,
   Param,
+  Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CreateCategoryDTO } from '../dtos/create-category.dto';
 import { CategoriesService } from '../services/categories.service';
@@ -27,21 +29,26 @@ export class CategoriesController {
     return await this.categoriesService.getCategories();
   }
 
+  @Get('/name')
+  async getCategoryByName(@Query('name') name: string) {
+    return await this.categoriesService.getCategoryByName(name);
+  }
+
   @Get(':id')
-  async getCategory(@Param('id') id: string) {
+  async getCategory(@Param('id', ParseUUIDPipe) id: string) {
     return await this.categoriesService.getCategory(id);
   }
 
   @Put(':id')
   async updateCategory(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedCategory: UpdateCategoryDTO,
   ) {
     return await this.categoriesService.updateCategory(id, updatedCategory);
   }
 
   @Delete(':id')
-  async deleteCategory(@Param('id') id: string) {
+  async deleteCategory(@Param('id', ParseUUIDPipe) id: string) {
     return await this.categoriesService.deleteCategory(id);
   }
 }

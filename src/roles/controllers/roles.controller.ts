@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CreateRolDTO } from '../dtos/create-rol.dto';
 import { RolesService } from '../services/roles.service';
@@ -19,7 +20,7 @@ export class RolesController {
 
   @Post()
   async createRol(@Body() rol: CreateRolDTO) {
-    return await this.rolesService.create(rol);
+    return await this.rolesService.createRol(rol);
   }
 
   @Get()
@@ -28,17 +29,20 @@ export class RolesController {
   }
 
   @Get(':id')
-  async getRol(@Param('id') id: string) {
-    return await this.rolesService.getRol(id);
+  async getRol(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.rolesService.getRole(id);
   }
 
   @Put(':id')
-  async updateRol(@Param('id') id: string, @Body() updateData: UpdateRolDTO) {
-    return await this.rolesService.updateRol(id, updateData);
+  async updateRol(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateData: UpdateRolDTO,
+  ) {
+    return await this.rolesService.updateRole(id, updateData);
   }
 
   @Delete(':id')
-  async deleteRol(@Param('id') id: string) {
-    return await this.rolesService.deleteRol(id);
+  async deleteRol(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.rolesService.deleteRole(id);
   }
 }

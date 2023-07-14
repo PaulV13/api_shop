@@ -1,5 +1,5 @@
 import { OrderEntity } from '../../orders/entities/order.entity';
-import { RolEntity } from '../../roles/entities/rol.entity';
+import { RoleEntity } from '../../roles/entities/rol.entity';
 import {
   Column,
   CreateDateColumn,
@@ -37,11 +37,11 @@ export class UserEntity {
   @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(() => RolEntity, (role) => role.users, {
+  @ManyToOne(() => RoleEntity, (role) => role.users, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
-  role: RolEntity;
+  role: RoleEntity;
 
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders: OrderEntity[];

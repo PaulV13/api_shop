@@ -42,24 +42,27 @@ export class CategoriesService {
   async updateCategory(
     id: string,
     updatedCategory: UpdateCategoryDTO,
-  ): Promise<UpdateResult> {
-    const category = await this.categoryRepository.findOneBy({ id });
+  ): Promise<CategoryEntity> {
+    const category = await this.getCategory(id);
     if (!category) throw new NotFoundException('Category not found');
 
-    return await this.categoryRepository.update(id, updatedCategory);
+    return await this.categoryRepository.save({
+      ...category,
+      ...updatedCategory,
+    });
   }
 
-  async deleteCategory(id: string): Promise<DeleteResult> {
-    const category = await this.categoryRepository.findOneBy({ id });
+  async deleteCategory(id: string): Promise<CategoryEntity> {
+    const category = await this.getCategory(id);
     if (!category) throw new NotFoundException('Category not found');
 
-    return await this.categoryRepository.delete(id);
+    return await this.categoryRepository.remove(category);
   }
 
   async getCategoryByName(name: string): Promise<CategoryEntity> {
     return await this.categoryRepository
       .createQueryBuilder('category')
-      .where('category.name = :name', { name: name })
+      .where('LOWER(category.name) = :name', { name: name.toLowerCase() })
       .getOne();
   }
 }

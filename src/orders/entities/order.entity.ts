@@ -17,7 +17,7 @@ export class OrderEntity {
   @Column()
   date: Date;
 
-  @Column()
+  @Column({ default: 0 })
   total_price: number;
 
   @ManyToOne(() => UserEntity, (user) => user.orders)
