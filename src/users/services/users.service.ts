@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -83,5 +79,11 @@ export class UsersService {
     if (!user) throw new NotFoundException(`User not found`);
 
     return await this.userRepository.remove(user);
+  }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ username });
+    if (!user) throw new NotFoundException(`User not found`);
+    return user;
   }
 }
