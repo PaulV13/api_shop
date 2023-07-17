@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { OrderEntity } from '../../orders/entities/order.entity';
 import { RoleEntity } from '../../roles/entities/rol.entity';
 import {
@@ -26,6 +27,7 @@ export class UserEntity {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({ default: '' })
@@ -42,7 +44,7 @@ export class UserEntity {
   })
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
   role: RoleEntity;
-
+  
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders: OrderEntity[];
 }

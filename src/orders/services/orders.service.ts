@@ -21,13 +21,10 @@ export class OrdersService {
     private readonly productsRepository: Repository<ProductEntity>,
   ) {}
 
-  async create(order: CreateOrderDTO): Promise<OrderEntity> {
-    if (!isValidUUID(order.user_id))
-      throw new BadRequestException('User id is not valid');
-
+  async create(order: CreateOrderDTO, userId: string): Promise<OrderEntity> {
     const newOrder = new OrderEntity();
     newOrder.date = new Date();
-    newOrder.user = await this.userRepository.findOneBy({ id: order.user_id });
+    newOrder.user = await this.userRepository.findOneBy({ id: userId });
     newOrder.total_price = 0;
 
     const items = await Promise.all(
@@ -57,8 +54,13 @@ export class OrdersService {
     return await this.ordersRepository.save(newOrder);
   }
 
-  async getOrders(): Promise<OrderEntity[]> {
+  async getOrders(userId: string): Promise<OrderEntity[]> {
     return await this.ordersRepository.find({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
       select: {
         ordersItem: {
           price: true,

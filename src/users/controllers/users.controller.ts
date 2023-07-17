@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   ParseUUIDPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDTO } from '../dtos/create-user.dto';
@@ -23,11 +25,13 @@ export class UsersController {
     return await this.usersService.create(user);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async getUsers() {
     return await this.usersService.getUsers();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getUser(@Param('id', ParseUUIDPipe) id: string) {
     return await this.usersService.getUser(id);
