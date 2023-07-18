@@ -26,9 +26,4 @@ export class CreateUserDTO {
   @IsString()
   @ApiProperty()
   avatar: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  roleId: string;
 }

@@ -6,9 +6,4 @@ export class CreateCategoryDTO {
   @IsString()
   @ApiProperty()
   name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  description: string;
 }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateCategoryDTO } from '../dtos/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CategoryEntity } from '../entities/category.entity';
 import { UpdateCategoryDTO } from '../dtos/update-category.dto';
 
@@ -16,10 +16,11 @@ export class CategoriesService {
     private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  async create(category: CreateCategoryDTO): Promise<CategoryEntity> {
-    const categoryExists = await this.categoryRepository.findOneBy({
-      name: category.name,
-    });
+  async createCategory(category: CreateCategoryDTO): Promise<CategoryEntity> {
+    const categoryExists = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('LOWER(category.name = :name', { name: category.name })
+      .getOne();
 
     if (categoryExists)
       throw new BadRequestException('Category already exists');
@@ -29,13 +30,29 @@ export class CategoriesService {
   }
 
   async getCategories(): Promise<CategoryEntity[]> {
-    return await this.categoryRepository.find();
+    return await this.categoryRepository
+      .createQueryBuilder('category')
+      .getMany();
   }
 
   async getCategory(id: string): Promise<CategoryEntity> {
-    const category = await this.categoryRepository.findOneBy({ id });
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.id = :id', { id })
+      .getOne();
+
     if (!category) throw new NotFoundException('Category not found');
 
+    return category;
+  }
+
+  async getCategoryByName(name: string): Promise<CategoryEntity> {
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('LOWER(category.name) = :name', { name: name.toLowerCase() })
+      .getOne();
+
+    if (!category) throw new NotFoundException('Category not found');
     return category;
   }
 
@@ -57,12 +74,5 @@ export class CategoriesService {
     if (!category) throw new NotFoundException('Category not found');
 
     return await this.categoryRepository.remove(category);
-  }
-
-  async getCategoryByName(name: string): Promise<CategoryEntity> {
-    return await this.categoryRepository
-      .createQueryBuilder('category')
-      .where('LOWER(category.name) = :name', { name: name.toLowerCase() })
-      .getOne();
   }
 }

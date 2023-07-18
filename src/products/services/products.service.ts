@@ -20,7 +20,7 @@ export class ProductsService {
     private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  async create(product: CreateProductDTO): Promise<ProductEntity> {
+  async createProduct(product: CreateProductDTO): Promise<ProductEntity> {
     if (!isValidUUID(product.category_id))
       throw new BadRequestException('Category id is not valid');
 

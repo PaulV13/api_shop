@@ -20,8 +20,8 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  async create(@Body() category: CreateCategoryDTO) {
-    return await this.categoriesService.create(category);
+  async createCategory(@Body() category: CreateCategoryDTO) {
+    return await this.categoriesService.createCategory(category);
   }
 
   @Get()
@@ -29,7 +29,7 @@ export class CategoriesController {
     return await this.categoriesService.getCategories();
   }
 
-  @Get('/name')
+  @Get('name')
   async getCategoryByName(@Query('name') name: string) {
     return await this.categoriesService.getCategoryByName(name);
   }

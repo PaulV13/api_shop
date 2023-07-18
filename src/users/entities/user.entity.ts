@@ -44,7 +44,7 @@ export class UserEntity {
   })
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
   role: RoleEntity;
-  
+
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders: OrderEntity[];
 }

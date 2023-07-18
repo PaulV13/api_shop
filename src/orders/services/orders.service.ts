@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../entities/order.entity';
@@ -6,7 +6,6 @@ import { OrderItemEntity } from '../../orders/entities/order-item.entity';
 import { CreateOrderDTO } from '../dtos/create-order.dto';
 import { UserEntity } from '../../users/entities/user.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
-import { validate as isValidUUID } from 'uuid';
 
 @Injectable()
 export class OrdersService {
@@ -21,7 +20,10 @@ export class OrdersService {
     private readonly productsRepository: Repository<ProductEntity>,
   ) {}
 
-  async create(order: CreateOrderDTO, userId: string): Promise<OrderEntity> {
+  async createOrder(
+    order: CreateOrderDTO,
+    userId: string,
+  ): Promise<OrderEntity> {
     const newOrder = new OrderEntity();
     newOrder.date = new Date();
     newOrder.user = await this.userRepository.findOneBy({ id: userId });
