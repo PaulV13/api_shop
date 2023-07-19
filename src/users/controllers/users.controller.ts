@@ -40,7 +40,7 @@ export class UsersController {
 
   @Get('role')
   async getUsersByRole(@Query('roleName') roleName: string) {
-    return await this.usersService.getUserByRole(roleName);
+    return await this.usersService.getUsersByRole(roleName);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

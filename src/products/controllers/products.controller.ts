@@ -42,6 +42,11 @@ export class ProductsController {
     return await this.productsService.getProductsByPriceRange(min, max);
   }
 
+  @Get('title')
+  async filterProductsByTitle(@Query('title') title: string) {
+    return await this.productsService.getProductsByTitle(title);
+  }
+
   @Get(':id')
   async getProduct(@Param('id', ParseUUIDPipe) id: string) {
     console.log('id: ', id);

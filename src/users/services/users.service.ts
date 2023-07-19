@@ -67,6 +67,9 @@ export class UsersService {
       .where('LOWER(user.username) = :username', {
         username: username.toLowerCase(),
       })
+      .orWhere('LOWER(user.email) = :email', {
+        email: username.toLocaleLowerCase(),
+      })
       .leftJoin('user.role', 'role')
       .select(['user', 'role.name'])
       .getOne();
@@ -75,13 +78,26 @@ export class UsersService {
     return user;
   }
 
-  async getUserByRole(roleName: string): Promise<UserEntity[]> {
+  async getUsersByRole(roleName: string): Promise<UserEntity[]> {
     return await this.userRepository
       .createQueryBuilder('user')
       .leftJoin('user.role', 'role')
       .where('LOWER(role.name) = :name', { name: roleName.toLocaleLowerCase() })
       .select(['user', 'role.name'])
       .getMany();
+  }
+
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: email })
+      .leftJoin('user.role', 'role')
+      .select(['user', 'role.name'])
+      .getOne();
+
+    if (!user) throw new NotFoundException(`User not found`);
+
+    return user;
   }
 
   async changeUserRole(

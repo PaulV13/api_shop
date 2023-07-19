@@ -2,7 +2,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 ConfigModule.forRoot();
-
 const configService = new ConfigService();
 
 export const PostgresDataSource: DataSourceOptions = {

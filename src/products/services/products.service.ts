@@ -109,4 +109,13 @@ export class ProductsService {
       .andWhere('product.price <= :max', { max })
       .getMany();
   }
+
+  async getProductsByTitle(title: string) {
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where('LOWER(product.title) like :title', {
+        title: `%${title.toLocaleLowerCase()}%`,
+      })
+      .getMany();
+  }
 }
