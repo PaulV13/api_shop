@@ -17,10 +17,14 @@ export class RolesService {
   ) {}
 
   async createRole(roleCreated: CreateRolDTO): Promise<RoleEntity> {
-    const role = await this.roleRepository.findOneBy({
-      name: roleCreated.name,
-    });
-    if (role) throw new BadRequestException('Role already exists');
+    const roleExists = await this.roleRepository
+      .createQueryBuilder('roles')
+      .where('LOWER(roles.name) = :name', {
+        name: roleCreated.name.toLowerCase(),
+      })
+      .getOne();
+
+    if (roleExists) throw new BadRequestException('Role already exists');
 
     const newRole = this.roleRepository.create(roleCreated);
     return await this.roleRepository.save(newRole);

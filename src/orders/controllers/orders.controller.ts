@@ -25,7 +25,7 @@ export class OrdersController {
 
   @UseGuards(JwtGuard)
   @Get()
-  async getOrders(@Request() req: Request) {
-    return await this.orderService.getOrders(req['user'].sub);
+  async getOrdersByUser(@Request() req: Request) {
+    return await this.orderService.getOrdersByUser(req['user'].sub);
   }
 }

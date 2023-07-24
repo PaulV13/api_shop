@@ -18,8 +18,10 @@ export class CategoriesService {
 
   async createCategory(category: CreateCategoryDTO): Promise<CategoryEntity> {
     const categoryExists = await this.categoryRepository
-      .createQueryBuilder('category')
-      .where('LOWER(category.name = :name', { name: category.name })
+      .createQueryBuilder('categories')
+      .where('LOWER(categories.name) = :name', {
+        name: category.name.toLowerCase(),
+      })
       .getOne();
 
     if (categoryExists)

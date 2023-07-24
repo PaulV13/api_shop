@@ -7,14 +7,18 @@ import {
   Put,
   Delete,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateRolDTO } from '../dtos/create-rol.dto';
 import { RolesService } from '../services/roles.service';
 import { UpdateRoleDTO } from '../dtos/update-rol.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from '../guards/roles.guard';
 
 @ApiTags('roles')
 @Controller('roles')
+@ApiBearerAuth()
+@UseGuards(RoleGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

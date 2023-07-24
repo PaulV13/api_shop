@@ -9,9 +9,10 @@ import { CategoriesController } from './controllers/categories.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { UuidMiddleware } from './middlewares/uuid.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CategoryEntity])],
+  imports: [TypeOrmModule.forFeature([CategoryEntity]), JwtModule.register({})],
   providers: [CategoriesService],
   controllers: [CategoriesController],
 })

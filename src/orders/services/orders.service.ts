@@ -56,7 +56,7 @@ export class OrdersService {
     return await this.ordersRepository.save(newOrder);
   }
 
-  async getOrders(userId: string): Promise<OrderEntity[]> {
+  async getOrdersByUser(userId: string): Promise<OrderEntity[]> {
     return await this.ordersRepository.find({
       where: {
         user: {

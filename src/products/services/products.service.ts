@@ -20,7 +20,10 @@ export class ProductsService {
     private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  async createProduct(product: CreateProductDTO): Promise<ProductEntity> {
+  async createProduct(
+    product: CreateProductDTO,
+    file: string,
+  ): Promise<ProductEntity> {
     if (!isValidUUID(product.category_id))
       throw new BadRequestException('Category id is not valid');
 
@@ -31,6 +34,7 @@ export class ProductsService {
 
     const newProduct = this.productRepository.create(product);
     newProduct.category = category;
+    newProduct.image = file ? file : '';
 
     return await this.productRepository.save(newProduct);
   }

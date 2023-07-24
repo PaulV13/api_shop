@@ -21,9 +21,10 @@ export class UsersService {
     private readonly roleRepository: Repository<RoleEntity>,
   ) {}
 
-  async createUser(user: CreateUserDTO): Promise<UserEntity> {
+  async createUser(user: CreateUserDTO, file: string): Promise<UserEntity> {
     const passwordHash = await bcrypt.hash(user.password, 10);
     user.password = passwordHash;
+    user.avatar = file ? file : '';
 
     const role = await this.roleRepository
       .createQueryBuilder('role')

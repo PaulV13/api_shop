@@ -16,7 +16,7 @@ import { RefresTokenGuard } from '../guards/auth.refresh_token.guard';
 import { ResetPasswordDTO } from '../dtos/reset-password.dto';
 import { ForgotPasswordDTO } from '../dtos/forgot-password.dto';
 import { Response } from 'express';
-@ApiBearerAuth()
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -27,6 +27,7 @@ export class AuthController {
     return await this.authService.login(loginDto.username, loginDto.password);
   }
 
+  @ApiBearerAuth()
   @UseGuards(RefresTokenGuard)
   @Get('refresh_token')
   async getRefreshToken(@Request() req: Request) {
